@@ -1,0 +1,397 @@
+{
+  "app": {
+    "name": "Blue Carbon Field App",
+    "shortName": "BC Field",
+    "version": "1.0.0",
+    "metadataVersion": "2026.11.1",
+    "updatedAt": "2026-11-09",
+    "owner": "Direktorat Konservasi Ekosistem, Ditjen Pengelolaan Kelautan – KKP",
+    "publicUrl": "https://claude.ai/artifact/UMysNhDYZ2SU9TkD8rhH1x",
+    "pairedWith": "MRV Calculator Karbon Biru",
+    "disclaimer": "Panduan identifikasi bersifat bantu. Konfirmasi jenis dengan buku identifikasi resmi atau ahli taksonomi sebelum data dipakai untuk MRV."
+  },
+  "sampleCode": {
+    "pattern": "{ECO}-{YEAR}-{SITE}-{SEQ}",
+    "seqPad": 3,
+    "qrPrefix": "BCFA",
+    "tokens": "ECO = kode ekosistem, YEAR = tahun pengambilan, SITE = kode lokasi survei, TYPE = kode jenis sampel, SEQ = nomor urut"
+  },
+  "sync": {
+    "mode": "auto",
+    "collection": "bcfa_records",
+    "configDoc": "bcfa_config/metadata",
+    "restEndpoint": "",
+    "supabaseUrl": "https://dgijsrvnattwiunyguay.supabase.co",
+    "supabaseAnonKey": "sb_publishable_AFVM7I0a5fZaLoTAI_ExpQ_VO0Arkkt",
+    "supabaseTable": "bcfa_records",
+    "photoMaxPx": 1000,
+    "photoQuality": 0.62,
+    "thumbPx": 220
+  },
+  "ai": { "function": "identify-species" },
+  "gps": {
+    "bounds": { "latMin": -11.5, "latMax": 6.5, "lonMin": 94.5, "lonMax": 141.5 },
+    "boundsLabel": "wilayah Indonesia",
+    "timeoutMs": 20000
+  },
+  "labStatus": [
+    { "code": "FIELD", "label": "Dikemas di lapangan" },
+    { "code": "TRANSIT", "label": "Dalam pengiriman" },
+    { "code": "RECEIVED", "label": "Diterima laboratorium" },
+    { "code": "ANALYSIS", "label": "Dalam analisis" },
+    { "code": "RESULT", "label": "Hasil tersedia" },
+    { "code": "VERIFIED", "label": "Diverifikasi (QA/QC)" }
+  ],
+  "photoCategories": [
+    { "code": "plot", "label": "Plot / kuadran" },
+    { "code": "transect", "label": "Transek" },
+    { "code": "sediment", "label": "Sedimen / core" },
+    { "code": "sample", "label": "Sampel & label" },
+    { "code": "species", "label": "Spesimen jenis" },
+    { "code": "site", "label": "Lanskap lokasi" }
+  ],
+  "lists": {
+    "substrate": ["Lumpur", "Lumpur berpasir", "Pasir berlumpur", "Pasir", "Pasir kasar", "Pecahan karang", "Batu"],
+    "tide": ["Surut", "Menuju surut", "Pasang", "Menuju pasang"],
+    "treatment": ["Dilabel ganda (dalam & luar)", "Kantong ziplock", "Didinginkan 4 °C (cool box)", "Dibekukan", "Dikeringkan udara", "Dipotong per interval di lapangan", "Dibilas air tawar"],
+    "storageTemp": ["Suhu ruang", "Cool box ±4 °C", "Beku ≤ −18 °C"],
+    "program": ["Inventarisasi baseline", "Monitoring berkala", "Verifikasi MRV", "Rehabilitasi / restorasi", "Penelitian"]
+  },
+  "surveyForm": {
+    "fields": [
+      { "key": "title", "label": "Nama survei", "type": "text", "required": true, "placeholder": "Survei lamun Alor – November 2026" },
+      { "key": "ecosystem", "label": "Ekosistem", "type": "ecosystem", "required": true },
+      { "key": "program", "label": "Tujuan kegiatan", "type": "select", "optionsFrom": "program" },
+      { "key": "province", "label": "Provinsi", "type": "text", "required": true },
+      { "key": "regency", "label": "Kabupaten/Kota", "type": "text", "required": true },
+      { "key": "siteName", "label": "Nama lokasi", "type": "text", "required": true, "placeholder": "Teluk Kabola" },
+      { "key": "siteCode", "label": "Kode lokasi", "type": "text", "required": true, "pattern": "^[A-Z0-9]{2,8}$", "patternHint": "2–8 huruf kapital/angka, contoh ALOR", "uppercase": true, "help": "Dipakai di kode sampel, contoh LM-2026-ALOR-001." },
+      { "key": "startDate", "label": "Tanggal mulai", "type": "date", "required": true, "default": "today" },
+      { "key": "endDate", "label": "Tanggal selesai", "type": "date" },
+      { "key": "teamLeader", "label": "Ketua tim", "type": "text", "required": true, "default": "user" },
+      { "key": "teamMembers", "label": "Anggota tim", "type": "textarea", "placeholder": "Satu nama per baris" },
+      { "key": "institution", "label": "Instansi", "type": "text", "default": "Direktorat Konservasi Ekosistem – KKP" },
+      { "key": "notes", "label": "Catatan", "type": "textarea" }
+    ],
+    "rules": [
+      { "id": "survey-dates", "type": "compare", "a": "startDate", "op": "<=", "b": "endDate", "level": "error", "message": "Tanggal selesai lebih awal dari tanggal mulai." }
+    ]
+  },
+  "ecosystems": [
+    {
+      "code": "LM",
+      "key": "lamun",
+      "label": "Lamun",
+      "enabled": true,
+      "color": "#2E7D4F",
+      "observation": {
+        "label": "Kuadran lamun",
+        "titleField": "stationCode",
+        "subtitleFields": ["transect", "quadratPos"],
+        "fields": [
+          { "key": "stationCode", "label": "Stasiun", "type": "text", "required": true, "placeholder": "ST1", "uppercase": true },
+          { "key": "transect", "label": "Transek", "type": "text", "placeholder": "T1", "uppercase": true },
+          { "key": "quadratPos", "label": "Posisi kuadran pada transek", "type": "number", "unit": "m", "min": 0, "max": 100, "step": 1 },
+          { "key": "quadratSize", "label": "Ukuran kuadran", "type": "select", "options": ["50 × 50 cm", "25 × 25 cm", "1 × 1 m"], "default": "50 × 50 cm" },
+          { "key": "observedAt", "label": "Waktu pengamatan", "type": "datetime", "required": true, "default": "now" },
+          { "key": "gps", "label": "Koordinat kuadran", "type": "gps", "required": true },
+          { "key": "waterDepth", "label": "Kedalaman air", "type": "number", "unit": "m", "min": 0, "max": 30, "step": 0.1 },
+          { "key": "tide", "label": "Kondisi pasut", "type": "select", "optionsFrom": "tide" },
+          { "key": "substrate", "label": "Substrat", "type": "select", "optionsFrom": "substrate", "required": true },
+          { "key": "totalCover", "label": "Tutupan lamun total", "type": "number", "unit": "%", "min": 0, "max": 100, "step": 1, "required": true },
+          { "key": "speciesCover", "label": "Tutupan per jenis", "type": "repeatTable", "addLabel": "Tambah jenis", "columns": [
+            { "key": "species", "label": "Jenis", "type": "species", "required": true },
+            { "key": "cover", "label": "Tutupan", "type": "number", "unit": "%", "min": 0, "max": 100, "step": 1, "required": true },
+            { "key": "shoots", "label": "Tegakan", "type": "number", "unit": "per kuadran", "min": 0, "max": 5000, "step": 1 }
+          ] },
+          { "key": "canopyHeight", "label": "Tinggi kanopi rata-rata", "type": "number", "unit": "cm", "min": 0, "max": 200, "step": 0.5 },
+          { "key": "epiphyte", "label": "Epifit / makroalga", "type": "select", "options": ["Tidak ada", "Sedikit", "Sedang", "Banyak"] },
+          { "key": "photos", "label": "Foto", "type": "photos", "categories": ["plot", "transect", "species", "site"] },
+          { "key": "notes", "label": "Catatan", "type": "textarea" }
+        ],
+        "rules": [
+          { "id": "lm-gps", "type": "gpsPresent", "field": "gps", "level": "error", "message": "Koordinat belum diambil." },
+          { "id": "lm-gps-bounds", "type": "gpsInBounds", "field": "gps", "level": "error", "message": "Koordinat berada di luar {bounds}. Periksa tanda minus pada lintang." },
+          { "id": "lm-gps-acc", "type": "gpsAccuracy", "field": "gps", "max": 15, "level": "warning", "message": "Akurasi GPS {value} m, lebih besar dari batas {max} m. Tunggu sinyal lebih stabil bila memungkinkan." },
+          { "id": "lm-cover-sum", "type": "sumCompare", "table": "speciesCover", "column": "cover", "op": "<=", "value": 100, "level": "error", "message": "Jumlah tutupan per jenis {sum}% melebihi 100%." },
+          { "id": "lm-cover-match", "type": "sumCompare", "table": "speciesCover", "column": "cover", "op": "approx", "field": "totalCover", "tolerance": 10, "level": "warning", "message": "Jumlah tutupan per jenis ({sum}%) berbeda jauh dari tutupan total ({target}%)." },
+          { "id": "lm-species-rows", "type": "minRows", "table": "speciesCover", "min": 1, "when": { "field": "totalCover", "gt": 0 }, "level": "error", "message": "Tutupan total lebih dari 0%, tetapi belum ada jenis yang dicatat." },
+          { "id": "lm-photo-plot", "type": "photoMin", "category": "plot", "min": 1, "level": "error", "message": "Minimal 1 foto plot/kuadran sebagai bukti MRV." },
+          { "id": "lm-not-future", "type": "notFuture", "field": "observedAt", "level": "error", "message": "Waktu pengamatan berada di masa depan." }
+        ]
+      },
+      "sampleTypes": [
+        {
+          "code": "CORE",
+          "label": "Core sedimen",
+          "fields": [
+            { "key": "linkedObs", "label": "Kuadran asal", "type": "obsRef", "help": "Koordinat kuadran disalin otomatis bila koordinat sampel masih kosong." },
+            { "key": "collectedAt", "label": "Waktu pengambilan", "type": "datetime", "required": true, "default": "now" },
+            { "key": "gps", "label": "Koordinat titik core", "type": "gps", "required": true },
+            { "key": "corerType", "label": "Alat core", "type": "select", "options": ["Pipa PVC", "Russian peat corer", "Auger", "Lainnya"], "default": "Pipa PVC" },
+            { "key": "coreDiameter", "label": "Diameter dalam core", "type": "number", "unit": "cm", "min": 2, "max": 15, "step": 0.1 },
+            { "key": "penetrationDepth", "label": "Kedalaman tembus core", "type": "number", "unit": "cm", "min": 1, "max": 300, "step": 0.5, "required": true },
+            { "key": "recoveredLength", "label": "Panjang sedimen terambil", "type": "number", "unit": "cm", "min": 1, "max": 300, "step": 0.5, "required": true },
+            { "key": "compaction", "label": "Kompaksi", "type": "computed", "formula": "compaction" },
+            { "key": "depthTop", "label": "Kedalaman atas subsampel", "type": "number", "unit": "cm", "min": 0, "max": 300, "step": 0.5, "required": true },
+            { "key": "depthBottom", "label": "Kedalaman bawah subsampel", "type": "number", "unit": "cm", "min": 0, "max": 300, "step": 0.5, "required": true },
+            { "key": "thickness", "label": "Tebal interval", "type": "computed", "formula": "thickness" },
+            { "key": "sedimentType", "label": "Jenis sedimen", "type": "select", "optionsFrom": "substrate" },
+            { "key": "treatment", "label": "Perlakuan sampel", "type": "multiselect", "optionsFrom": "treatment", "required": true },
+            { "key": "storageTemp", "label": "Penyimpanan", "type": "select", "optionsFrom": "storageTemp" },
+            { "key": "photos", "label": "Foto", "type": "photos", "categories": ["sediment", "sample"] },
+            { "key": "notes", "label": "Catatan", "type": "textarea" }
+          ],
+          "labFields": [
+            { "key": "labStatus", "label": "Status pengujian", "type": "select", "optionsFrom": "labStatus", "required": true, "default": "FIELD" },
+            { "key": "labName", "label": "Laboratorium", "type": "text" },
+            { "key": "labReceivedAt", "label": "Tanggal diterima lab", "type": "date" },
+            { "key": "corgMethod", "label": "Metode Corg", "type": "select", "options": ["Loss on Ignition (LOI)", "Walkley-Black", "Elemental analyzer (CHN)"] },
+            { "key": "bulkDensity", "label": "Bulk density", "type": "number", "unit": "g/cm³", "min": 0.05, "max": 2.6, "step": 0.001 },
+            { "key": "corgPercent", "label": "Karbon organik (Corg)", "type": "number", "unit": "%", "min": 0, "max": 60, "step": 0.01 },
+            { "key": "soilCarbon", "label": "Stok karbon interval", "type": "computed", "formula": "soilCarbon" },
+            { "key": "labAnalyst", "label": "Analis", "type": "text" },
+            { "key": "labNotes", "label": "Catatan lab", "type": "textarea" }
+          ],
+          "rules": [
+            { "id": "core-depth", "type": "compare", "a": "depthTop", "op": "<", "b": "depthBottom", "level": "error", "message": "Kedalaman atas harus lebih kecil dari kedalaman bawah." },
+            { "id": "core-recovery", "type": "compare", "a": "recoveredLength", "op": "<=", "b": "penetrationDepth", "level": "error", "message": "Panjang sedimen terambil tidak boleh melebihi kedalaman tembus." },
+            { "id": "core-interval", "type": "compare", "a": "depthBottom", "op": "<=", "b": "penetrationDepth", "level": "warning", "message": "Interval subsampel lebih dalam dari kedalaman tembus core." },
+            { "id": "core-gps", "type": "gpsPresent", "field": "gps", "level": "error", "message": "Koordinat titik core belum diambil." },
+            { "id": "core-gps-bounds", "type": "gpsInBounds", "field": "gps", "level": "error", "message": "Koordinat berada di luar {bounds}." },
+            { "id": "core-photo", "type": "photoMin", "category": "sediment", "min": 1, "level": "error", "message": "Minimal 1 foto core/sedimen." },
+            { "id": "core-bd", "type": "requiredWhen", "field": "bulkDensity", "when": { "field": "labStatus", "in": ["RESULT", "VERIFIED"] }, "level": "error", "message": "Status {status}, tetapi bulk density belum diisi." },
+            { "id": "core-corg", "type": "requiredWhen", "field": "corgPercent", "when": { "field": "labStatus", "in": ["RESULT", "VERIFIED"] }, "level": "error", "message": "Status {status}, tetapi Corg belum diisi." },
+            { "id": "core-corg-high", "type": "compare", "a": "corgPercent", "op": "<=", "value": 20, "level": "warning", "message": "Corg {value}% di atas kisaran umum sedimen lamun. Periksa ulang satuan atau hasil lab." }
+          ],
+          "carbon": { "formula": "soilCarbon" }
+        },
+        {
+          "code": "BIO",
+          "label": "Biomassa lamun",
+          "fields": [
+            { "key": "linkedObs", "label": "Kuadran asal", "type": "obsRef" },
+            { "key": "collectedAt", "label": "Waktu pengambilan", "type": "datetime", "required": true, "default": "now" },
+            { "key": "gps", "label": "Koordinat", "type": "gps", "required": true },
+            { "key": "quadratArea", "label": "Luas kuadran panen", "type": "select", "required": true, "options": [
+              { "value": "0.25", "label": "50 × 50 cm (0,25 m²)" },
+              { "value": "0.0625", "label": "25 × 25 cm (0,0625 m²)" },
+              { "value": "0.01", "label": "10 × 10 cm (0,01 m²)" }
+            ], "default": "0.0625" },
+            { "key": "fraction", "label": "Fraksi", "type": "select", "required": true, "options": ["Atas substrat (daun)", "Bawah substrat (akar & rizoma)", "Total"] },
+            { "key": "species", "label": "Jenis (bila dipisah per jenis)", "type": "species" },
+            { "key": "wetWeight", "label": "Berat basah", "type": "number", "unit": "g", "min": 0, "max": 20000, "step": 0.01 },
+            { "key": "treatment", "label": "Perlakuan sampel", "type": "multiselect", "optionsFrom": "treatment", "required": true },
+            { "key": "photos", "label": "Foto", "type": "photos", "categories": ["sample", "plot"] },
+            { "key": "notes", "label": "Catatan", "type": "textarea" }
+          ],
+          "labFields": [
+            { "key": "labStatus", "label": "Status pengujian", "type": "select", "optionsFrom": "labStatus", "required": true, "default": "FIELD" },
+            { "key": "labName", "label": "Laboratorium", "type": "text" },
+            { "key": "dryWeight", "label": "Berat kering", "type": "number", "unit": "g", "min": 0, "max": 20000, "step": 0.001 },
+            { "key": "carbonFraction", "label": "Kandungan karbon jaringan", "type": "number", "unit": "%", "min": 0, "max": 60, "step": 0.01 },
+            { "key": "biomassCarbon", "label": "Stok karbon biomassa", "type": "computed", "formula": "biomassCarbon" },
+            { "key": "labNotes", "label": "Catatan lab", "type": "textarea" }
+          ],
+          "rules": [
+            { "id": "bio-weight", "type": "compare", "a": "dryWeight", "op": "<=", "b": "wetWeight", "level": "error", "message": "Berat kering melebihi berat basah." },
+            { "id": "bio-gps", "type": "gpsPresent", "field": "gps", "level": "error", "message": "Koordinat belum diambil." },
+            { "id": "bio-photo", "type": "photoMin", "category": "sample", "min": 1, "level": "warning", "message": "Belum ada foto sampel." },
+            { "id": "bio-dry", "type": "requiredWhen", "field": "dryWeight", "when": { "field": "labStatus", "in": ["RESULT", "VERIFIED"] }, "level": "error", "message": "Status {status}, tetapi berat kering belum diisi." }
+          ],
+          "carbon": { "formula": "biomassCarbon" }
+        }
+      ],
+      "traits": [
+        { "key": "leafShape", "label": "Bentuk daun", "options": [
+          { "value": "pita", "label": "Pita (memanjang pipih)", "glyph": "strap" },
+          { "value": "silindris", "label": "Silindris seperti lidi", "glyph": "cylinder" },
+          { "value": "oval", "label": "Oval bertangkai, berpasangan", "glyph": "oval" },
+          { "value": "batang", "label": "Daun di ujung/sepanjang batang tegak", "glyph": "stem" }
+        ] },
+        { "key": "leafTip", "label": "Ujung daun", "options": [
+          { "value": "membulat", "label": "Membulat halus" },
+          { "value": "bergerigi", "label": "Bergerigi" },
+          { "value": "trisula", "label": "Tiga gigi (trisula)" },
+          { "value": "runcing", "label": "Meruncing" }
+        ] },
+        { "key": "size", "label": "Ukuran daun", "options": [
+          { "value": "kecil", "label": "Kecil (< 5 cm)" },
+          { "value": "sedang", "label": "Sedang (5–40 cm)" },
+          { "value": "besar", "label": "Besar (> 40 cm)" }
+        ] }
+      ],
+      "species": [
+        { "name": "Enhalus acoroides", "local": "Lamun tropika, setul", "traits": { "leafShape": "pita", "leafTip": "membulat", "size": "besar" }, "keys": ["Daun pita sangat panjang 30–150 cm, lebar 1–2 cm", "Rizoma tebal tertutup serat hitam kaku", "Tepi daun cenderung menggulung"], "habitat": "Lumpur hingga pasir berlumpur, intertidal–subtidal dangkal" },
+        { "name": "Thalassia hemprichii", "local": "Lamun dugong", "traits": { "leafShape": "pita", "leafTip": "membulat", "size": "sedang" }, "keys": ["Daun agak melengkung seperti sabit, 10–40 cm", "Garis atau bintik sel tanin merah-cokelat pada daun", "Rizoma beruas dengan sisik segitiga"], "habitat": "Pasir hingga pecahan karang, sangat umum di paparan terumbu" },
+        { "name": "Cymodocea rotundata", "local": "", "traits": { "leafShape": "pita", "leafTip": "membulat", "size": "sedang" }, "keys": ["Daun pita sempit 2–4 mm, ujung membulat halus tanpa gerigi", "Bekas pelepah membentuk cincin tertutup pada batang"], "habitat": "Intertidal, pasir dan pecahan karang" },
+        { "name": "Cymodocea serrulata", "local": "", "traits": { "leafShape": "pita", "leafTip": "bergerigi", "size": "sedang" }, "keys": ["Daun pita 4–9 mm, ujung bergerigi jelas", "Pelepah daun berbentuk segitiga melebar"], "habitat": "Pasir berlumpur, subtidal dangkal" },
+        { "name": "Halodule uninervis", "local": "", "traits": { "leafShape": "pita", "leafTip": "trisula", "size": "sedang" }, "keys": ["Daun pita sempit dengan satu urat tengah", "Ujung daun bertiga gigi (trisula)"], "habitat": "Pasir hingga lumpur, sering perintis" },
+        { "name": "Halodule pinifolia", "local": "", "traits": { "leafShape": "pita", "leafTip": "membulat", "size": "kecil" }, "keys": ["Daun sangat sempit ≤ 1,5 mm", "Ujung membulat dengan gerigi halus, satu urat tengah gelap"], "habitat": "Pasir intertidal" },
+        { "name": "Syringodium isoetifolium", "local": "Lamun mi", "traits": { "leafShape": "silindris", "leafTip": "runcing", "size": "sedang" }, "keys": ["Daun silindris seperti lidi atau mi, 7–30 cm", "Penampang daun bulat, ujung meruncing"], "habitat": "Subtidal dangkal, pasir" },
+        { "name": "Halophila ovalis", "local": "Lamun sendok", "traits": { "leafShape": "oval", "leafTip": "membulat", "size": "kecil" }, "keys": ["Sepasang daun oval bertangkai, panjang 1–4 cm", "10–25 pasang urat melintang"], "habitat": "Pasir hingga lumpur, intertidal–subtidal" },
+        { "name": "Halophila minor", "local": "", "traits": { "leafShape": "oval", "leafTip": "membulat", "size": "kecil" }, "keys": ["Daun oval kecil < 1,5 cm", "Kurang dari 8 pasang urat melintang"], "habitat": "Pasir halus, intertidal" },
+        { "name": "Halophila decipiens", "local": "", "traits": { "leafShape": "oval", "leafTip": "bergerigi", "size": "kecil" }, "keys": ["Daun lonjong dengan tepi bergerigi halus", "Permukaan daun berambut halus"], "habitat": "Subtidal lebih dalam, lumpur halus" },
+        { "name": "Halophila spinulosa", "local": "", "traits": { "leafShape": "batang", "leafTip": "bergerigi", "size": "kecil" }, "keys": ["Daun kecil berhadapan di sepanjang batang tegak, tampak seperti pakis", "Tepi daun bergerigi"], "habitat": "Subtidal, pasir berlumpur" },
+        { "name": "Thalassodendron ciliatum", "local": "", "traits": { "leafShape": "batang", "leafTip": "bergerigi", "size": "sedang" }, "keys": ["Batang tegak berkayu", "Daun pita berkelompok di ujung batang, ujung membulat bergerigi"], "habitat": "Terumbu dan substrat keras berarus" }
+      ]
+    },
+    {
+      "code": "MG",
+      "key": "mangrove",
+      "label": "Mangrove",
+      "enabled": true,
+      "color": "#7A5532",
+      "observation": {
+        "label": "Plot mangrove",
+        "titleField": "plotCode",
+        "subtitleFields": ["transect", "zone"],
+        "fields": [
+          { "key": "plotCode", "label": "Kode plot", "type": "text", "required": true, "placeholder": "P1", "uppercase": true },
+          { "key": "transect", "label": "Transek", "type": "text", "placeholder": "T1", "uppercase": true },
+          { "key": "zone", "label": "Zona", "type": "select", "options": ["Depan (laut)", "Tengah", "Belakang (darat)"] },
+          { "key": "plotSize", "label": "Ukuran plot", "type": "select", "required": true, "options": ["10 × 10 m (pohon)", "5 × 5 m (pancang)", "2 × 2 m (semai)", "20 × 20 m"], "default": "10 × 10 m (pohon)" },
+          { "key": "observedAt", "label": "Waktu pengamatan", "type": "datetime", "required": true, "default": "now" },
+          { "key": "gps", "label": "Koordinat pusat plot", "type": "gps", "required": true },
+          { "key": "substrate", "label": "Substrat", "type": "select", "optionsFrom": "substrate", "required": true },
+          { "key": "salinity", "label": "Salinitas air", "type": "number", "unit": "‰", "min": 0, "max": 45, "step": 0.1 },
+          { "key": "canopyCover", "label": "Tutupan tajuk", "type": "number", "unit": "%", "min": 0, "max": 100, "step": 1 },
+          { "key": "trees", "label": "Tegakan", "type": "repeatTable", "addLabel": "Tambah tegakan", "columns": [
+            { "key": "species", "label": "Jenis", "type": "species", "required": true },
+            { "key": "category", "label": "Kategori", "type": "select", "options": ["Pohon", "Pancang", "Semai"], "required": true },
+            { "key": "dbh", "label": "DBH", "type": "number", "unit": "cm", "min": 0, "max": 300, "step": 0.1 },
+            { "key": "height", "label": "Tinggi", "type": "number", "unit": "m", "min": 0, "max": 50, "step": 0.1 },
+            { "key": "condition", "label": "Kondisi", "type": "select", "options": ["Hidup", "Mati", "Rusak"], "default": "Hidup" }
+          ] },
+          { "key": "photos", "label": "Foto", "type": "photos", "categories": ["plot", "site", "species"] },
+          { "key": "notes", "label": "Catatan", "type": "textarea" }
+        ],
+        "rules": [
+          { "id": "mg-gps", "type": "gpsPresent", "field": "gps", "level": "error", "message": "Koordinat belum diambil." },
+          { "id": "mg-gps-bounds", "type": "gpsInBounds", "field": "gps", "level": "error", "message": "Koordinat berada di luar {bounds}." },
+          { "id": "mg-gps-acc", "type": "gpsAccuracy", "field": "gps", "max": 15, "level": "warning", "message": "Akurasi GPS {value} m, lebih besar dari batas {max} m." },
+          { "id": "mg-trees", "type": "minRows", "table": "trees", "min": 1, "level": "warning", "message": "Belum ada tegakan yang dicatat di plot ini." },
+          { "id": "mg-dbh-tree", "type": "rowRule", "table": "trees", "when": { "column": "category", "equals": "Pohon" }, "column": "dbh", "op": ">=", "value": 10, "level": "warning", "message": "Baris {rows}: kategori Pohon dengan DBH < 10 cm. Periksa kategori sesuai pedoman yang dipakai." },
+          { "id": "mg-dbh-sapling", "type": "rowRule", "table": "trees", "when": { "column": "category", "equals": "Pancang" }, "column": "dbh", "op": "<", "value": 10, "level": "warning", "message": "Baris {rows}: kategori Pancang dengan DBH ≥ 10 cm." },
+          { "id": "mg-dbh-required", "type": "rowRule", "table": "trees", "when": { "column": "category", "in": ["Pohon", "Pancang"] }, "column": "dbh", "op": "present", "level": "error", "message": "Baris {rows}: DBH wajib untuk pohon dan pancang." },
+          { "id": "mg-photo", "type": "photoMin", "category": "plot", "min": 1, "level": "error", "message": "Minimal 1 foto plot sebagai bukti MRV." },
+          { "id": "mg-not-future", "type": "notFuture", "field": "observedAt", "level": "error", "message": "Waktu pengamatan berada di masa depan." }
+        ]
+      },
+      "sampleTypes": [
+        {
+          "code": "CORE",
+          "label": "Core sedimen",
+          "fields": [
+            { "key": "linkedObs", "label": "Plot asal", "type": "obsRef", "help": "Koordinat plot disalin otomatis bila koordinat sampel masih kosong." },
+            { "key": "collectedAt", "label": "Waktu pengambilan", "type": "datetime", "required": true, "default": "now" },
+            { "key": "gps", "label": "Koordinat titik core", "type": "gps", "required": true },
+            { "key": "corerType", "label": "Alat core", "type": "select", "options": ["Russian peat corer", "Pipa PVC", "Auger", "Lainnya"], "default": "Russian peat corer" },
+            { "key": "coreDiameter", "label": "Diameter dalam core", "type": "number", "unit": "cm", "min": 2, "max": 15, "step": 0.1 },
+            { "key": "penetrationDepth", "label": "Kedalaman tembus core", "type": "number", "unit": "cm", "min": 1, "max": 300, "step": 0.5, "required": true },
+            { "key": "recoveredLength", "label": "Panjang sedimen terambil", "type": "number", "unit": "cm", "min": 1, "max": 300, "step": 0.5, "required": true },
+            { "key": "compaction", "label": "Kompaksi", "type": "computed", "formula": "compaction" },
+            { "key": "depthTop", "label": "Kedalaman atas subsampel", "type": "number", "unit": "cm", "min": 0, "max": 300, "step": 0.5, "required": true },
+            { "key": "depthBottom", "label": "Kedalaman bawah subsampel", "type": "number", "unit": "cm", "min": 0, "max": 300, "step": 0.5, "required": true },
+            { "key": "thickness", "label": "Tebal interval", "type": "computed", "formula": "thickness" },
+            { "key": "sedimentType", "label": "Jenis sedimen", "type": "select", "optionsFrom": "substrate" },
+            { "key": "treatment", "label": "Perlakuan sampel", "type": "multiselect", "optionsFrom": "treatment", "required": true },
+            { "key": "storageTemp", "label": "Penyimpanan", "type": "select", "optionsFrom": "storageTemp" },
+            { "key": "photos", "label": "Foto", "type": "photos", "categories": ["sediment", "sample"] },
+            { "key": "notes", "label": "Catatan", "type": "textarea" }
+          ],
+          "labFields": [
+            { "key": "labStatus", "label": "Status pengujian", "type": "select", "optionsFrom": "labStatus", "required": true, "default": "FIELD" },
+            { "key": "labName", "label": "Laboratorium", "type": "text" },
+            { "key": "labReceivedAt", "label": "Tanggal diterima lab", "type": "date" },
+            { "key": "corgMethod", "label": "Metode Corg", "type": "select", "options": ["Loss on Ignition (LOI)", "Walkley-Black", "Elemental analyzer (CHN)"] },
+            { "key": "bulkDensity", "label": "Bulk density", "type": "number", "unit": "g/cm³", "min": 0.05, "max": 2.6, "step": 0.001 },
+            { "key": "corgPercent", "label": "Karbon organik (Corg)", "type": "number", "unit": "%", "min": 0, "max": 60, "step": 0.01 },
+            { "key": "soilCarbon", "label": "Stok karbon interval", "type": "computed", "formula": "soilCarbon" },
+            { "key": "labAnalyst", "label": "Analis", "type": "text" },
+            { "key": "labNotes", "label": "Catatan lab", "type": "textarea" }
+          ],
+          "rules": [
+            { "id": "mgc-depth", "type": "compare", "a": "depthTop", "op": "<", "b": "depthBottom", "level": "error", "message": "Kedalaman atas harus lebih kecil dari kedalaman bawah." },
+            { "id": "mgc-recovery", "type": "compare", "a": "recoveredLength", "op": "<=", "b": "penetrationDepth", "level": "error", "message": "Panjang sedimen terambil tidak boleh melebihi kedalaman tembus." },
+            { "id": "mgc-interval", "type": "compare", "a": "depthBottom", "op": "<=", "b": "penetrationDepth", "level": "warning", "message": "Interval subsampel lebih dalam dari kedalaman tembus core." },
+            { "id": "mgc-gps", "type": "gpsPresent", "field": "gps", "level": "error", "message": "Koordinat titik core belum diambil." },
+            { "id": "mgc-gps-bounds", "type": "gpsInBounds", "field": "gps", "level": "error", "message": "Koordinat berada di luar {bounds}." },
+            { "id": "mgc-photo", "type": "photoMin", "category": "sediment", "min": 1, "level": "error", "message": "Minimal 1 foto core/sedimen." },
+            { "id": "mgc-bd", "type": "requiredWhen", "field": "bulkDensity", "when": { "field": "labStatus", "in": ["RESULT", "VERIFIED"] }, "level": "error", "message": "Status {status}, tetapi bulk density belum diisi." },
+            { "id": "mgc-corg", "type": "requiredWhen", "field": "corgPercent", "when": { "field": "labStatus", "in": ["RESULT", "VERIFIED"] }, "level": "error", "message": "Status {status}, tetapi Corg belum diisi." },
+            { "id": "mgc-corg-high", "type": "compare", "a": "corgPercent", "op": "<=", "value": 45, "level": "warning", "message": "Corg {value}% sangat tinggi. Periksa ulang satuan atau hasil lab." }
+          ],
+          "carbon": { "formula": "soilCarbon" }
+        }
+      ],
+      "traits": [
+        { "key": "root", "label": "Tipe akar", "options": [
+          { "value": "tunjang", "label": "Akar tunjang (penyangga)", "glyph": "stilt" },
+          { "value": "pensil", "label": "Akar napas pensil", "glyph": "pencil" },
+          { "value": "kerucut", "label": "Akar napas kerucut tebal", "glyph": "cone" },
+          { "value": "lutut", "label": "Akar lutut", "glyph": "knee" },
+          { "value": "papan", "label": "Akar papan berliku", "glyph": "plank" },
+          { "value": "tanpa", "label": "Tanpa akar khusus", "glyph": "none" }
+        ] },
+        { "key": "leaf", "label": "Susunan daun", "options": [
+          { "value": "berhadapan", "label": "Tunggal berhadapan" },
+          { "value": "berseling", "label": "Tunggal berseling" },
+          { "value": "majemuk", "label": "Majemuk menyirip" }
+        ] },
+        { "key": "habit", "label": "Perawakan", "options": [
+          { "value": "pohon", "label": "Pohon" },
+          { "value": "semak", "label": "Semak / pohon kecil" },
+          { "value": "palma", "label": "Palma tanpa batang" }
+        ] }
+      ],
+      "species": [
+        { "name": "Rhizophora apiculata", "local": "Bakau minyak", "traits": { "root": "tunjang", "leaf": "berhadapan", "habit": "pohon" }, "keys": ["Ujung daun runcing pendek (apikulat)", "Tangkai daun dan daun penumpu kemerahan", "Bunga berpasangan dua pada tangkai pendek; propagul 20–40 cm"], "habitat": "Lumpur dalam, zona tengah" },
+        { "name": "Rhizophora mucronata", "local": "Bakau hitam", "traits": { "root": "tunjang", "leaf": "berhadapan", "habit": "pohon" }, "keys": ["Daun lebar elips dengan duri ujung panjang (mukronat)", "Bunga 4–8 per tangkai", "Propagul panjang 36–70 cm, permukaan kasar"], "habitat": "Lumpur, tepi sungai dan zona depan" },
+        { "name": "Rhizophora stylosa", "local": "Bakau kecil", "traits": { "root": "tunjang", "leaf": "berhadapan", "habit": "pohon" }, "keys": ["Mirip R. mucronata tetapi daun lebih kecil", "Tangkai putik panjang 4–6 mm"], "habitat": "Pasir dan pecahan karang, pulau kecil" },
+        { "name": "Bruguiera gymnorhiza", "local": "Tancang", "traits": { "root": "lutut", "leaf": "berhadapan", "habit": "pohon" }, "keys": ["Kelopak bunga merah dengan 10–14 cuping", "Propagul seperti cerutu 12–30 cm"], "habitat": "Zona tengah–belakang, lumpur padat" },
+        { "name": "Bruguiera cylindrica", "local": "Burus", "traits": { "root": "lutut", "leaf": "berhadapan", "habit": "pohon" }, "keys": ["Bunga kecil, kelopak hijau kekuningan 8 cuping", "Propagul silindris ramping 8–15 cm"], "habitat": "Lumpur padat, zona tengah" },
+        { "name": "Ceriops tagal", "local": "Tengar", "traits": { "root": "tunjang", "leaf": "berhadapan", "habit": "semak" }, "keys": ["Akar tunjang kecil atau banir", "Daun bulat telur sungsang, ujung membulat atau berlekuk", "Propagul beralur 15–25 cm"], "habitat": "Zona belakang, substrat lebih kering" },
+        { "name": "Avicennia marina", "local": "Api-api putih", "traits": { "root": "pensil", "leaf": "berhadapan", "habit": "pohon" }, "keys": ["Permukaan bawah daun abu-abu keputihan", "Kulit batang halus keabu-abuan, mengelupas", "Akar napas pensil rapat"], "habitat": "Zona depan, perintis pada lumpur dan pasir" },
+        { "name": "Avicennia alba", "local": "Api-api", "traits": { "root": "pensil", "leaf": "berhadapan", "habit": "pohon" }, "keys": ["Daun lanset dengan ujung runcing, bawah keabuan", "Buah berparuh"], "habitat": "Zona depan, lumpur lunak" },
+        { "name": "Sonneratia alba", "local": "Pedada", "traits": { "root": "kerucut", "leaf": "berhadapan", "habit": "pohon" }, "keys": ["Daun membulat seperti sendok", "Benang sari putih; buah dengan kelopak berbentuk bintang"], "habitat": "Zona depan berarus, pasir berlumpur" },
+        { "name": "Sonneratia caseolaris", "local": "Pedada merah, perepat", "traits": { "root": "kerucut", "leaf": "berhadapan", "habit": "pohon" }, "keys": ["Ujung daun dengan tonjolan kecil kemerahan", "Benang sari merah di pangkal, putih di ujung"], "habitat": "Salinitas rendah, tepi sungai" },
+        { "name": "Xylocarpus granatum", "local": "Nyirih", "traits": { "root": "papan", "leaf": "majemuk", "habit": "pohon" }, "keys": ["Daun majemuk 2–4 anak daun", "Buah bulat besar 10–25 cm seperti bola meriam", "Akar papan berliku seperti ular"], "habitat": "Zona belakang, dekat aliran air tawar" },
+        { "name": "Lumnitzera racemosa", "local": "Teruntum putih", "traits": { "root": "tanpa", "leaf": "berseling", "habit": "semak" }, "keys": ["Daun berdaging berkumpul di ujung ranting, ujung berlekuk", "Bunga putih"], "habitat": "Zona belakang" },
+        { "name": "Aegiceras corniculatum", "local": "Gedangan, kacangan", "traits": { "root": "tanpa", "leaf": "berseling", "habit": "semak" }, "keys": ["Buah melengkung seperti tanduk kecil", "Bunga putih harum berkelompok"], "habitat": "Tepi sungai payau" },
+        { "name": "Excoecaria agallocha", "local": "Buta-buta", "traits": { "root": "tanpa", "leaf": "berseling", "habit": "pohon" }, "keys": ["Getah putih beracun, hindari kontak dengan mata", "Daun berseling, mengilap"], "habitat": "Zona belakang dan tepi darat" },
+        { "name": "Nypa fruticans", "local": "Nipah", "traits": { "root": "tanpa", "leaf": "majemuk", "habit": "palma" }, "keys": ["Palma tanpa batang tegak", "Daun menyirip sangat panjang tumbuh dari rimpang"], "habitat": "Estuari berair payau" }
+      ]
+    },
+    {
+      "code": "TK",
+      "key": "karang",
+      "label": "Terumbu karang",
+      "enabled": false,
+      "color": "#1D5F7A",
+      "note": "Contoh modul berikutnya. Ubah enabled menjadi true setelah form dan aturan disetujui.",
+      "observation": {
+        "label": "Transek karang",
+        "titleField": "stationCode",
+        "subtitleFields": ["depth"],
+        "fields": [
+          { "key": "stationCode", "label": "Stasiun", "type": "text", "required": true, "uppercase": true },
+          { "key": "observedAt", "label": "Waktu pengamatan", "type": "datetime", "required": true, "default": "now" },
+          { "key": "gps", "label": "Koordinat", "type": "gps", "required": true },
+          { "key": "depth", "label": "Kedalaman", "type": "number", "unit": "m", "min": 0, "max": 40 },
+          { "key": "lifeform", "label": "Tutupan bentik", "type": "repeatTable", "columns": [
+            { "key": "category", "label": "Kategori", "type": "select", "options": ["Karang keras hidup", "Karang mati", "Karang mati beralga", "Karang lunak", "Pasir", "Pecahan karang", "Lainnya"] },
+            { "key": "cover", "label": "Tutupan", "type": "number", "unit": "%", "min": 0, "max": 100 }
+          ] },
+          { "key": "photos", "label": "Foto", "type": "photos", "categories": ["transect", "site"] }
+        ],
+        "rules": [
+          { "id": "tk-sum", "type": "sumCompare", "table": "lifeform", "column": "cover", "op": "<=", "value": 100, "level": "error", "message": "Jumlah tutupan {sum}% melebihi 100%." }
+        ]
+      },
+      "sampleTypes": [],
+      "traits": [],
+      "species": []
+    }
+  ]
+}

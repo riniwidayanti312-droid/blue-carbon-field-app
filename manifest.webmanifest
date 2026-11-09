@@ -1,0 +1,22 @@
+{
+  "name": "Blue Carbon Field App",
+  "short_name": "BC Field",
+  "description": "Pencatatan data lapangan lamun dan mangrove untuk MRV karbon biru: GPS, foto, kode sampel QR, validasi otomatis, dan mode offline.",
+  "lang": "id",
+  "start_url": "./#home",
+  "scope": "./",
+  "id": "./",
+  "display": "standalone",
+  "background_color": "#EEF3F1",
+  "theme_color": "#0F2B2E",
+  "categories": ["productivity", "utilities"],
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Pindai label sampel", "short_name": "Pindai", "url": "./#scan", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Daftar survei", "short_name": "Survei", "url": "./#surveys", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] }
+  ]
+}
