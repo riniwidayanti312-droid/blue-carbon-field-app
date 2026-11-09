@@ -281,6 +281,8 @@ const App = {
 const ACTIONS = {
   'sb-save': async () => { Settings.v.sbUrl = $('#sbUrl').value.trim(); Settings.v.sbKey = $('#sbKey').value.trim(); await Settings.save(); Sync.reset(); toast(Auth.configured() ? 'Server Supabase disimpan. Silakan masuk.' : 'Server dikosongkan'); App.render(); },
   'sb-login': async b => { const em = $('#sbEmail').value.trim(), pw = $('#sbPw').value; if (!em || !pw) { toast('Isi email dan kata sandi.', 'warn'); return; } b.disabled = true; try { await Auth.signIn(em, pw); toast('Masuk sebagai ' + em); App.render(); Sync.run({ silent: true }); } catch (e) { b.disabled = false; toast('Gagal masuk: ' + e.message, 'err'); } },
+  'sb-chpw': async b => { const a = $('#sbNewPw').value, c = $('#sbNewPw2').value; if (a.length < 8) { toast('Kata sandi minimal 8 karakter.', 'warn'); return; } if (a !== c) { toast('Kedua kata sandi tidak sama.', 'warn'); return; } b.disabled = true; try { await Auth.changePassword(a); toast('Kata sandi baru tersimpan. Pakai ini untuk masuk berikutnya.'); App.render(); } catch (e) { b.disabled = false; toast('Gagal mengubah kata sandi: ' + e.message, 'err'); } },
+  'sb-showpw': () => { const i = $('#sbPw'); if (i) i.type = i.type === 'password' ? 'text' : 'password'; },
   'sb-logout': async () => { const p = Store.all().filter(r => r.meta.syncStatus !== 'synced').length; if (p && !await confirmDialog('Keluar dari akun tim?', `${p} data belum terkirim. Data tetap aman di perangkat dan dikirim setelah masuk lagi.`, 'Keluar')) return; await Auth.signOut(); toast('Sudah keluar'); App.render(); },
   'new-survey': () => { const rec = newRecord('survey', {}, null); openForm({ title: 'Survei baru', rec, fields: META.surveyForm.fields, isNew: true, saveLabel: 'Buat survei', onSaved: r => go('survey-' + r.id) }); },
   'edit-survey': b => { const rec = Store.get(b.dataset.id); const kids = live('observation').concat(live('sample')).some(x => x.parentId === rec.id); openForm({ title: 'Ubah survei', rec, fields: META.surveyForm.fields, ctx: { lockEco: kids } }); },
@@ -332,7 +334,7 @@ const ACTIONS = {
 document.addEventListener('click', e => {
   if (e.target.closest('.scrim')) return;
   const b = e.target.closest('[data-act]'); if (!b) return;
-  const fn = ACTIONS[b.dataset.act]; if (fn) { e.preventDefault(); fn(b, e); }
+  const fn = ACTIONS[b.dataset.act]; if (fn) { if (b.type !== 'checkbox') e.preventDefault(); fn(b, e); }
 });
 document.addEventListener('keydown', e => { if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('.ph[role=button]') && !e.target.closest('.scrim')) { e.preventDefault(); viewPhoto(e.target.dataset.id); } });
 document.addEventListener('input', e => {

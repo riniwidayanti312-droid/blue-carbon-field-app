@@ -32,6 +32,11 @@ const Auth = {
     return this.session.access_token;
   },
   async signOut() { try { const c = this.cfg(); await fetch(`${c.url}/auth/v1/logout`, { method: 'POST', headers: { apikey: c.key, Authorization: 'Bearer ' + this.session?.access_token } }); } catch (e) { } await this._save(null); Sync.reset(); },
+  async changePassword(pw) {
+    const c = this.cfg(); const t = await this.token(); if (!t) throw new Error('Masuk dulu');
+    const r = await fetch(`${c.url}/auth/v1/user`, { method: 'PUT', headers: { apikey: c.key, Authorization: 'Bearer ' + t, 'Content-Type': 'application/json' }, body: JSON.stringify({ password: pw }) });
+    const j = await r.json().catch(() => ({})); if (!r.ok) throw new Error(j.msg || j.error_description || j.message || ('HTTP ' + r.status));
+  },
   async isAdmin() { try { const rows = await sbFetch('/rest/v1/bcfa_admins?select=user_id'); return Array.isArray(rows) && rows.length > 0; } catch (e) { return false; } }
 };
 async function sbFetch(path, opt = {}) {

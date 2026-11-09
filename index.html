@@ -4517,8 +4517,12 @@ function serverPanel() {
   if (window.claude && !Auth.configured() && !Settings.v.showSb) return '';
   const c = Auth.cfg(); const s = Auth.session;
   return `<div class="panel"><h2 style="margin-bottom:8px">Akun tim & server Supabase</h2>
-    ${s ? `<p class="small">Masuk sebagai <b>${esc(s.user?.email || '')}</b>.</p><div class="btns"><button class="btn sm" data-act="sb-logout">Keluar</button></div>`
-      : Auth.configured() ? `<div class="field"><label for="sbEmail">Email</label><input id="sbEmail" class="input" type="email" autocomplete="username" inputmode="email"></div><div class="field"><label for="sbPw">Kata sandi</label><input id="sbPw" class="input" type="password" autocomplete="current-password"></div><button class="btn primary" data-act="sb-login">Masuk</button><p class="tiny" style="margin-top:8px">Akun dibuat oleh admin. Setelah sekali masuk, aplikasi tetap bisa dipakai offline.</p>`
+    ${s ? `<p class="small">Masuk sebagai <b>${esc(s.user?.email || '')}</b>.</p><div class="btns"><button class="btn sm" data-act="sb-logout">Keluar</button></div>
+      <details style="margin-top:12px"><summary class="small" style="cursor:pointer;font-weight:650">Ubah kata sandi</summary>
+        <div class="field" style="margin-top:10px"><label for="sbNewPw">Kata sandi baru (min. 8 karakter)</label><input id="sbNewPw" class="input" type="password" autocomplete="new-password"></div>
+        <div class="field"><label for="sbNewPw2">Ulangi kata sandi baru</label><input id="sbNewPw2" class="input" type="password" autocomplete="new-password"></div>
+        <button class="btn sm primary" data-act="sb-chpw">Simpan kata sandi baru</button></details>`
+      : Auth.configured() ? `<div class="field"><label for="sbEmail">Email</label><input id="sbEmail" class="input" type="email" autocomplete="username" inputmode="email"></div><div class="field"><label for="sbPw">Kata sandi</label><input id="sbPw" class="input" type="password" autocomplete="current-password"></div><label class="row small" style="margin:-6px 0 12px;gap:6px"><input type="checkbox" data-act="sb-showpw"> Tampilkan kata sandi</label><button class="btn primary" data-act="sb-login">Masuk</button><p class="tiny" style="margin-top:8px">Akun dibuat oleh admin. Setelah sekali masuk, aplikasi tetap bisa dipakai offline.</p>`
       : `<p class="small">Server belum diatur. Isi dari halaman Settings → API di proyek Supabase, atau minta admin.</p>`}
     <details style="margin-top:12px"${Auth.configured() ? '' : ' open'}><summary class="small" style="cursor:pointer;font-weight:650">Pengaturan server</summary>
       <div class="field" style="margin-top:10px"><label for="sbUrl">Project URL</label><input id="sbUrl" class="input mono" value="${esc(c.url)}" placeholder="https://xxxx.supabase.co" autocomplete="off"></div>
@@ -4560,6 +4564,11 @@ const Auth = {
     return this.session.access_token;
   },
   async signOut() { try { const c = this.cfg(); await fetch(`${c.url}/auth/v1/logout`, { method: 'POST', headers: { apikey: c.key, Authorization: 'Bearer ' + this.session?.access_token } }); } catch (e) { } await this._save(null); Sync.reset(); },
+  async changePassword(pw) {
+    const c = this.cfg(); const t = await this.token(); if (!t) throw new Error('Masuk dulu');
+    const r = await fetch(`${c.url}/auth/v1/user`, { method: 'PUT', headers: { apikey: c.key, Authorization: 'Bearer ' + t, 'Content-Type': 'application/json' }, body: JSON.stringify({ password: pw }) });
+    const j = await r.json().catch(() => ({})); if (!r.ok) throw new Error(j.msg || j.error_description || j.message || ('HTTP ' + r.status));
+  },
   async isAdmin() { try { const rows = await sbFetch('/rest/v1/bcfa_admins?select=user_id'); return Array.isArray(rows) && rows.length > 0; } catch (e) { return false; } }
 };
 async function sbFetch(path, opt = {}) {
@@ -4893,6 +4902,8 @@ const App = {
 const ACTIONS = {
   'sb-save': async () => { Settings.v.sbUrl = $('#sbUrl').value.trim(); Settings.v.sbKey = $('#sbKey').value.trim(); await Settings.save(); Sync.reset(); toast(Auth.configured() ? 'Server Supabase disimpan. Silakan masuk.' : 'Server dikosongkan'); App.render(); },
   'sb-login': async b => { const em = $('#sbEmail').value.trim(), pw = $('#sbPw').value; if (!em || !pw) { toast('Isi email dan kata sandi.', 'warn'); return; } b.disabled = true; try { await Auth.signIn(em, pw); toast('Masuk sebagai ' + em); App.render(); Sync.run({ silent: true }); } catch (e) { b.disabled = false; toast('Gagal masuk: ' + e.message, 'err'); } },
+  'sb-chpw': async b => { const a = $('#sbNewPw').value, c = $('#sbNewPw2').value; if (a.length < 8) { toast('Kata sandi minimal 8 karakter.', 'warn'); return; } if (a !== c) { toast('Kedua kata sandi tidak sama.', 'warn'); return; } b.disabled = true; try { await Auth.changePassword(a); toast('Kata sandi baru tersimpan. Pakai ini untuk masuk berikutnya.'); App.render(); } catch (e) { b.disabled = false; toast('Gagal mengubah kata sandi: ' + e.message, 'err'); } },
+  'sb-showpw': () => { const i = $('#sbPw'); if (i) i.type = i.type === 'password' ? 'text' : 'password'; },
   'sb-logout': async () => { const p = Store.all().filter(r => r.meta.syncStatus !== 'synced').length; if (p && !await confirmDialog('Keluar dari akun tim?', `${p} data belum terkirim. Data tetap aman di perangkat dan dikirim setelah masuk lagi.`, 'Keluar')) return; await Auth.signOut(); toast('Sudah keluar'); App.render(); },
   'new-survey': () => { const rec = newRecord('survey', {}, null); openForm({ title: 'Survei baru', rec, fields: META.surveyForm.fields, isNew: true, saveLabel: 'Buat survei', onSaved: r => go('survey-' + r.id) }); },
   'edit-survey': b => { const rec = Store.get(b.dataset.id); const kids = live('observation').concat(live('sample')).some(x => x.parentId === rec.id); openForm({ title: 'Ubah survei', rec, fields: META.surveyForm.fields, ctx: { lockEco: kids } }); },
@@ -4944,7 +4955,7 @@ const ACTIONS = {
 document.addEventListener('click', e => {
   if (e.target.closest('.scrim')) return;
   const b = e.target.closest('[data-act]'); if (!b) return;
-  const fn = ACTIONS[b.dataset.act]; if (fn) { e.preventDefault(); fn(b, e); }
+  const fn = ACTIONS[b.dataset.act]; if (fn) { if (b.type !== 'checkbox') e.preventDefault(); fn(b, e); }
 });
 document.addEventListener('keydown', e => { if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('.ph[role=button]') && !e.target.closest('.scrim')) { e.preventDefault(); viewPhoto(e.target.dataset.id); } });
 document.addEventListener('input', e => {

@@ -202,8 +202,12 @@ function serverPanel() {
   if (window.claude && !Auth.configured() && !Settings.v.showSb) return '';
   const c = Auth.cfg(); const s = Auth.session;
   return `<div class="panel"><h2 style="margin-bottom:8px">Akun tim & server Supabase</h2>
-    ${s ? `<p class="small">Masuk sebagai <b>${esc(s.user?.email || '')}</b>.</p><div class="btns"><button class="btn sm" data-act="sb-logout">Keluar</button></div>`
-      : Auth.configured() ? `<div class="field"><label for="sbEmail">Email</label><input id="sbEmail" class="input" type="email" autocomplete="username" inputmode="email"></div><div class="field"><label for="sbPw">Kata sandi</label><input id="sbPw" class="input" type="password" autocomplete="current-password"></div><button class="btn primary" data-act="sb-login">Masuk</button><p class="tiny" style="margin-top:8px">Akun dibuat oleh admin. Setelah sekali masuk, aplikasi tetap bisa dipakai offline.</p>`
+    ${s ? `<p class="small">Masuk sebagai <b>${esc(s.user?.email || '')}</b>.</p><div class="btns"><button class="btn sm" data-act="sb-logout">Keluar</button></div>
+      <details style="margin-top:12px"><summary class="small" style="cursor:pointer;font-weight:650">Ubah kata sandi</summary>
+        <div class="field" style="margin-top:10px"><label for="sbNewPw">Kata sandi baru (min. 8 karakter)</label><input id="sbNewPw" class="input" type="password" autocomplete="new-password"></div>
+        <div class="field"><label for="sbNewPw2">Ulangi kata sandi baru</label><input id="sbNewPw2" class="input" type="password" autocomplete="new-password"></div>
+        <button class="btn sm primary" data-act="sb-chpw">Simpan kata sandi baru</button></details>`
+      : Auth.configured() ? `<div class="field"><label for="sbEmail">Email</label><input id="sbEmail" class="input" type="email" autocomplete="username" inputmode="email"></div><div class="field"><label for="sbPw">Kata sandi</label><input id="sbPw" class="input" type="password" autocomplete="current-password"></div><label class="row small" style="margin:-6px 0 12px;gap:6px"><input type="checkbox" data-act="sb-showpw"> Tampilkan kata sandi</label><button class="btn primary" data-act="sb-login">Masuk</button><p class="tiny" style="margin-top:8px">Akun dibuat oleh admin. Setelah sekali masuk, aplikasi tetap bisa dipakai offline.</p>`
       : `<p class="small">Server belum diatur. Isi dari halaman Settings → API di proyek Supabase, atau minta admin.</p>`}
     <details style="margin-top:12px"${Auth.configured() ? '' : ' open'}><summary class="small" style="cursor:pointer;font-weight:650">Pengaturan server</summary>
       <div class="field" style="margin-top:10px"><label for="sbUrl">Project URL</label><input id="sbUrl" class="input mono" value="${esc(c.url)}" placeholder="https://xxxx.supabase.co" autocomplete="off"></div>
