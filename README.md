@@ -3,7 +3,7 @@
 Aplikasi pencatatan data lapangan lamun dan mangrove untuk MRV karbon biru — Direktorat Konservasi Ekosistem, KKP.
 GPS, foto bermetadata, kode sampel + QR, validasi otomatis, mode offline, dan sinkronisasi ke Supabase. Pasangan dari MRV Calculator.
 
-**Alamat aplikasi:** https://riniwidayanti312-droid.github.io/blue-carbon-field-app/
+**Alamat aplikasi:** https://blue-carbon-field-app.netlify.app (cadangan: https://riniwidayanti312-droid.github.io/blue-carbon-field-app/)
 
 ## Isi repositori
 

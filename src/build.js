@@ -4,7 +4,7 @@
 // Jalankan: node build.js   (dari folder src di repo: node build.js --web-only)
 const fs = require('fs'); const path = require('path');
 const D = __dirname; const r = f => fs.readFileSync(path.join(D, f), 'utf8');
-const WEB_URL = 'https://riniwidayanti312-droid.github.io/blue-carbon-field-app/';
+const WEB_URL = 'https://blue-carbon-field-app.netlify.app/';
 const ARTIFACT_URL = 'https://claude.ai/artifact/UMysNhDYZ2SU9TkD8rhH1x';
 const PWA = `<link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
