@@ -1,7 +1,7 @@
 /* Service worker Blue Carbon Field App
    - Menyimpan aplikasi di perangkat agar tetap terbuka tanpa internet.
    - Naikkan VERSION setiap kali index.html diperbarui. */
-const VERSION = 'bcfa-1.1.2';
+const VERSION = 'bcfa-1.1.3';
 const SHELL = ['./', './index.html', './manifest.webmanifest', './icons/icon-192.png', './icons/icon-512.png', './icons/maskable-512.png', './icons/apple-touch-icon.png', './icons/favicon-32.png'];
 const RUNTIME = ['fonts.googleapis.com', 'fonts.gstatic.com', 'cdn.jsdelivr.net'];
 

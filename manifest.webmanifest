@@ -3,7 +3,7 @@
   "short_name": "BC Field",
   "description": "Pencatatan data lapangan lamun dan mangrove untuk MRV karbon biru: GPS, foto, kode sampel QR, validasi otomatis, dan mode offline.",
   "lang": "id",
-  "start_url": "./#home",
+  "start_url": "./",
   "scope": "./",
   "id": "./",
   "display": "standalone",

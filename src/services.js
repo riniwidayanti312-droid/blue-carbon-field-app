@@ -268,6 +268,7 @@ const App = {
     if (r !== this.lastRoute) { window.scrollTo(0, 0); const h = view.querySelector('h1'); if (h) { h.tabIndex = -1; } }
     document.title = `${META.app.name}`;
     this.lastRoute = r; this.updateTop();
+    if (r === 'home' && location.hash) { try { history.replaceState(null, '', location.pathname + location.search); } catch (e) { } }
   },
   updateTop() {
     const pending = Store.all().filter(x => x.meta.syncStatus !== 'synced').length;
